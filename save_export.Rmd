@@ -12,6 +12,13 @@ Save everything
 save.image('data/all.rdata')
 ```
 
+Save ggplot and plotly objects
+
+```{r}
+save(list = c(ls(pattern = 'ly$'),ls(pattern = 'gg$')),
+     file = 'data/diagrams.rdata')
+```
+
 Export ggplot
 
 ```{r}
