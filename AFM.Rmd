@@ -1,0 +1,155 @@
+---
+title: "AFM"
+author: "Maximiliano Garnier"
+# date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(RColorBrewer)
+library(viridisLite)
+library(plotly)
+library(ggtern)
+library(plyr)
+library(tidyverse)
+```
+
+# Preparing the Data
+
+Firstly, we need to create the dictionary of points.
+
+```{r}
+#Build a library of points, left to right, top to bottom...
+tb.AFM = vroom::vroom("data/AFM.csv", 
+                          col_names = F, 
+                          col_types = c(.default = "d")) %>% 
+  na.omit() %>% 
+  mutate(id = 1:nrow(.)) %>% 
+  relocate(id)
+  # select(id,X3,X1,X2)
+  
+
+colnames(tb.AFM) = c("IDPoint","F","A","M")
+tb.AFM
+```
+
+# ggplot
+
+Now we can build the final plot, which employs the geom_polygon(…) and  geom_text(…) geometries and the above data-sets, we apply some transparency so the grid can be seen through the polygons, and base the drawing of the simple theme_bw(…) arrangement.
+
+```{r}
+AFM.gg <- ggtern(data=tb.AFM,aes(A,F,M)) +
+  geom_path(color = 'darkred') +
+  annotate('text', label = 'Tholeiitic', 
+           x=20, y=70, z=15, col='darkred',size=3) + 
+  annotate('text', label = 'Calc-Alkaline', 
+           x=40, y=20, z=30, col='darkred',size=3) +
+  theme_bw() + 
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  labs(title="AFM",
+       T="F",
+       L="A",
+       R="M")
+AFM.gg
+```
+
+```{r}
+ggsave('figures/AFM.png',AFM.gg,width = 9,height = 6,dpi = 300)
+```
+
+# plotly
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+AFM.ternaryAxes <- list(
+  aaxis = axis("F"), 
+  baxis = axis("A"), 
+  caxis = axis("M")
+)
+```
+
+```{r}
+AFM.ly = plot_ly() %>% 
+  add_trace(
+    data = tb.AFM,
+    a = ~F, b = ~A, c = ~M, 
+    colors = 'transparent',
+    type = "scatterternary",
+    mode = "lines",
+    line = list(color = "darkred"),
+    hoverinfo = 'none',
+    showlegend = F
+) %>%
+  add_trace(
+    a = c(70,20), b = c(20,40), c = c(15,30),
+    text = c('Tholeiitic','Calc-Alkaline'),
+    type = "scatterternary",
+    mode = "text",
+    hoverinfo = 'none',
+    textfont = list(family= "Arial", size= 12, color= "darkred"),
+    showlegend = F
+  ) %>% 
+  layout(
+    annotations = label("AFM"), ternary = AFM.ternaryAxes
+  ) %>% 
+  config(
+    toImageButtonOptions = list(
+      format = 'svg',
+      filename = 'AFM',
+      width = 9 * 96,
+      height = 6 * 96
+    )
+  )
+AFM.ly
+```
+
+# New data
+
+```{r}
+new.AFM = tibble(F=c(23,26.9,8.5),
+                 A=c(27,23.7,5.1),
+                 M=c(36,39.8,59.6))
+```
+
+```{r}
+AFM + 
+  geom_point(data = new.AFM)
+```
+
+```{r}
+AFM.ly %>% 
+  add_trace(a = ~F, b = ~A, c = ~M,
+            data = new.AFM,
+            name = 'New',
+            type = "scatterternary",
+            mode = "markers",
+            symbol = I('+'),
+            marker = list(size=10,color='coral'),
+            inherit = F) %>% 
+  layout(showlegend = T)
+```
+

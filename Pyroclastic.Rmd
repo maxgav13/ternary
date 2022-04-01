@@ -1,0 +1,200 @@
+---
+title: "Pyroclastic"
+author: "Maximiliano Garnier"
+# date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(RColorBrewer)
+library(viridisLite)
+library(ggtern)
+library(plyr)
+library(plotly)
+library(tidyverse)
+```
+
+# Preparing the Data
+
+Firstly, we need to create the dictionary of points.
+
+```{r}
+#Build a library of points, left to right, top to bottom...
+points.pyro = vroom::vroom("data/pyroclastic.csv", 
+                           col_names = F, 
+                           col_types = c(.default = "d")) %>% 
+  na.omit() %>% 
+  mutate(id = 1:nrow(.)) %>% 
+  relocate(id)
+  # select(id,X3,X1,X2)
+  
+
+colnames(points.pyro) = c("IDPoint","T","L","R")
+points.pyro
+```
+
+To visualise the points, the following code can be used:
+
+```{r}
+base.pyro <- ggtern(data=points.pyro,aes(L,T,R)) +
+  theme_bw() +
+  geom_point(shape=21,size=5,color="blue",fill="white") +
+  geom_mask() + 
+  geom_text(aes(label=IDPoint),color="blue")
+base.pyro
+```
+
+Assign each polygon a unique number and respective label.
+
+```{r}
+#Give each Polygon a number
+polygon.labels.pyro <- data.frame(
+  Label=c("Pyroclastic breccia /\nAgglomerate",
+          "Lapilli-tuff breccia",
+          "Lapilli-stone",
+          "Lapilli tuff",
+          "Tuff"),
+  Label.es = c("Brecha piroclástica /\nAglomerado",
+          "Toba brechosa",
+          "Lapillita",
+          "Toba lapillítica",
+          "Toba"))
+#Assign each label an index
+polygon.labels.pyro$IDLabel=1:nrow(polygon.labels.pyro)
+```
+
+Create the map between the polygon numbers and the points which make up those numbers. Make sure they are in clockwise or anticlockwise order (but not mixed)
+
+```{r}
+#Create a map of polygons to points
+polygons.pyro <- data.frame(
+  rbind(c(1,1),c(1,2),c(1,3),c(1,1),
+        c(2,2),c(2,4),c(2,5),c(2,3),c(2,2),
+        c(3,4),c(3,6),c(3,7),c(3,4),
+        c(4,4),c(4,7),c(4,8),c(4,5),c(4,4),
+        c(5,5),c(5,8),c(5,9),c(5,5)
+  )
+)
+#IMPORTANT FOR CORRECT ORDERING.
+polygons.pyro$PointOrder <- 1:nrow(polygons.pyro)
+ 
+#Rename the columns
+colnames(polygons.pyro) = c("IDLabel","IDPoint","PointOrder")
+```
+
+Now we merge the polygons, points and polygon labels to create a master dataframe.
+
+```{r}
+#Merge the three sets together to create a master set.
+df.pyro <- merge(polygons.pyro,points.pyro)
+df.pyro <- merge(df.pyro,polygon.labels.pyro)
+df.pyro <- df.pyro[order(df.pyro$PointOrder),]
+df.pyro = df.pyro %>% 
+  mutate(Label = as_factor(Label),
+         Label.es = as_factor(Label.es))
+```
+
+We also create a separate data frame for the labels positioned at the centroid of each polygon.
+
+```{r}
+#Determine the Labels Data library(plyr)
+Labs.pyro = ddply(df.pyro,"Label",
+                 function(x){c(c(mean(x$T),mean(x$L),mean(x$R)))})
+colnames(Labs.pyro) = c("Label","T","L","R")
+```
+
+Final tibble
+
+```{r}
+tb.pyro = df.pyro %>% 
+  rename(BB=T,Lapilli=L,Ash=R) %>% 
+  as_tibble() %>% 
+  select(-c(1:3))
+```
+
+# ggplot
+
+Now we can build the final plot, which employs the geom_polygon(…) and  geom_text(…) geometries and the above data-sets, we apply some transparency so the grid can be seen through the polygons, and base the drawing of the simple theme_bw(…) arrangement.
+
+```{r}
+# pyro.pal = colorRampPalette(brewer.pal(9,'Set1'))(n_distinct(df.pyro$Label))
+
+pyro.gg <- ggtern(data=tb.pyro,aes(Lapilli,BB,Ash)) +
+  geom_polygon(aes(fill=Label,group=Label),
+               color="black",alpha=0.5) +
+  # geom_text(data=Labs.pyro,aes(label=Label),size=2,color="black",
+  #           # angle=c(60,60,60,0,0,0,0)
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  # scale_fill_manual('',values = viridis(5,direction = 1,option = 'A')) +
+  scale_fill_brewer(palette = 'Set1') +
+  labs(title="Pyroclastic",
+       fill = "",
+       T="Blocks &\nBombs (> 64 mm)",
+       L="Lapilli\n(2-64 mm)",
+       R="Ash\n(< 2 mm)")
+pyro.gg
+```
+
+```{r}
+ggsave('figures/pyro.png',pyro.gg,width = 9,height = 6,dpi = 300)
+```
+
+# plotly
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+pyro.ternaryAxes <- list(
+  aaxis = axis("Blocks & Bombs (> 64 mm)"), 
+  baxis = axis("Lapilli (2-64 mm)"), 
+  caxis = axis("Ash (< 2 mm)")
+)
+```
+
+```{r}
+pyro.ly = plot_ly(
+  tb.pyro,
+  a = ~BB, b = ~Lapilli, c = ~Ash, color = ~Label, 
+  # colors = pyro.pal %>% set_names(levels(tb.pyro$Label)),
+  colors = 'Set1',
+  type = "scatterternary",
+  fill = "toself", 
+  mode = "lines"
+) %>%
+  layout(
+    annotations = label("Pyroclastic"), ternary = pyro.ternaryAxes
+  ) %>% 
+  config(
+    toImageButtonOptions = list(
+      format = 'svg',
+      filename = 'Pyroclastic',
+      width = 9 * 96,
+      height = 6 * 96
+    )
+  )
+pyro.ly
+```
+

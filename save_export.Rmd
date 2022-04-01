@@ -1,0 +1,27 @@
+
+Save tibbles and labels
+
+```{r}
+save(list = c(ls(pattern = 'tb.'),'Labs.QAP'),
+     file = 'data/all_tibbles.rdata')
+```
+
+Save everything
+
+```{r}
+save.image('data/all.rdata')
+```
+
+Export ggplot
+
+```{r}
+ggsave('figures/QAP_UM.pdf', QAP_UM.gg,
+       width = 9, height = 6, dpi = 300)
+```
+
+Export plotly
+
+```{r}
+htmlwidgets::saveWidget(QAP.ly, file = 'html/QAP.html',
+                        selfcontained = F, libdir = 'lib')
+```

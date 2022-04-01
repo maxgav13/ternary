@@ -1,0 +1,229 @@
+---
+title: "QAP-G"
+author: "Maximiliano Garnier"
+# date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(RColorBrewer)
+library(viridisLite)
+library(plotly)
+library(ggtern)
+library(plyr)
+library(tidyverse)
+```
+
+# Preparing the Data
+
+Firstly, we need to create the dictionary of points.
+
+```{r}
+#Build a library of points, left to right, top to bottom...
+points.QAP_G = vroom::vroom("data/QAP-G.csv", 
+                             col_names = F, 
+                             col_types = c(.default = "d")) %>% 
+  na.omit() %>% 
+  mutate(id = 1:nrow(.)) %>% 
+  relocate(id)
+# select(id,X3,X1,X2)
+
+
+colnames(points.QAP_G) = c("IDPoint","T","L","R")
+points.QAP_G
+```
+
+To visualise the points, the following code can be used:
+
+```{r}
+base.QAP_G <- ggtern(data=points.QAP_G,aes(L,T,R)) +
+  theme_bw() +
+  geom_point(shape=21,size=5,color="blue",fill="white") +
+  geom_mask() + 
+  geom_text(aes(label=IDPoint),color="blue")
+base.QAP_G
+```
+
+Assign each polygon a unique number and respective label.
+
+```{r}
+#Give each Polygon a number
+polygon.labels.QAP_G <- data.frame(
+  Label.en = c('Anorthosite',
+               'Gabbro',
+               'Orthopyroxene gabbro',
+               'Clinopyroxene norite',
+               'Norite',
+               'Clinopyroxenite',
+               'Websterite',
+               'Orthopyroxenite'
+  ),
+  Label.es = c('Anortosita',
+               'Gabro',
+               'Gabro ortopiroxénico',
+               'Norita clinopiroxénica',
+               'Norita',
+               'Clinopiroxenita',
+               'Websterita',
+               'Ortopiroxenita'
+  ))
+#Assign each label an index
+polygon.labels.QAP_G$IDLabel=1:nrow(polygon.labels.QAP_G)
+```
+
+Create the map between the polygon numbers and the points which make up those numbers. Make sure they are in clockwise or anticlockwise order (but not mixed)
+
+```{r}
+#Create a map of polygons to points
+polygons.QAP_G <- data.frame(
+  rbind(c(1,1),c(1,2),c(1,3),
+        c(2,2),c(2,9),c(2,10),c(2,4),
+        c(3,4),c(3,10),c(3,17),
+        c(4,4),c(4,17),c(4,11),
+        c(5,4),c(5,11),c(5,12),c(5,3),
+        c(6,9),c(6,13),c(6,14),
+        c(7,9),c(7,14),c(7,15),c(7,12),
+        c(8,12),c(8,15),c(8,16)
+  )
+)
+#IMPORTANT FOR CORRECT ORDERING.
+polygons.QAP_G$PointOrder <- 1:nrow(polygons.QAP_G)
+
+#Rename the columns
+colnames(polygons.QAP_G) = c("IDLabel","IDPoint","PointOrder")
+```
+
+Now we merge the polygons, points and polygon labels to create a master dataframe.
+
+```{r}
+#Merge the three sets together to create a master set.
+df.QAP_G <- merge(polygons.QAP_G,points.QAP_G)
+df.QAP_G <- merge(df.QAP_G,polygon.labels.QAP_G)
+df.QAP_G <- df.QAP_G[order(df.QAP_G$PointOrder),]
+df.QAP_G = df.QAP_G %>% 
+  mutate(Label.en = as_factor(Label.en),
+         Label.es = as_factor(Label.es))
+```
+
+We also create a separate data frame for the labels positioned at the centroid of each polygon.
+
+```{r}
+#Determine the Labels Data library(plyr)
+Labs.QAP_G = ddply(df.QAP_G,"Label.en",
+                    function(x){c(c(mean(x$T),mean(x$L),mean(x$R)))})
+colnames(Labs.QAP_G) = c("Label","Q","A","P")
+```
+
+Final tibble
+
+```{r}
+tb.QAP_G = df.QAP_G %>% 
+  rename(P=T,Cpx=L,Opx=R) %>% 
+  as_tibble() %>% 
+  select(-c(1:3))
+```
+
+
+# ggplot
+
+Now we can build the final plot, which employs the geom_polygon(…) and  geom_text(…) geometries and the above data-sets, we apply some transparency so the grid can be seen through the polygons, and base the drawing of the simple theme_bw(…) arrangement.
+
+```{r}
+lang = 'en'
+
+if (lang == 'en') {
+  QAP_G.gg <- ggtern(data=tb.QAP_G,aes(Cpx,P,Opx)) +
+  geom_polygon(aes(fill=Label.en,group=Label.en),
+               color="black",alpha=0.5) +
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  scale_fill_manual('',values = viridis(8,direction = -1,option = 'G')) +
+  labs(title="Gabbroic",
+       T="P",
+       L="Cpx",
+       R="Opx")
+} else {
+  QAP_G.gg <- ggtern(data=tb.QAP_G,aes(Cpx,P,Opx)) +
+  geom_polygon(aes(fill=Label.es,group=Label.es),
+               color="black",alpha=0.5) +
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  scale_fill_manual('',values = viridis(8,direction = -1,option = 'G')) +
+  labs(title="Gabros",
+       T="P",
+       L="Cpx",
+       R="Opx")
+}
+
+QAP_G.gg
+```
+
+```{r}
+ggsave('figures/QAP_G.png',QAP_G.gg,width = 9,height = 6,dpi = 300)
+```
+
+# plotly
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+QAP_G.ternaryAxes <- list(
+  aaxis = axis("P"), 
+  baxis = axis("Cpx"), 
+  caxis = axis("Opx")
+)
+```
+
+```{r}
+QAP_G.ly = plot_ly() %>% 
+  add_trace(
+    data = tb.QAP_G,
+    a = ~P, b = ~Cpx, c = ~Opx, 
+    color = ~Label.en,
+    # colors = QAP_G.pal %>% set_names(levels(tb.QAP_G$Label)),
+    colors = viridis(8,direction = -1,option = 'G'),
+    type = "scatterternary",
+    fill = "toself",
+    mode = "lines",
+    line = list(color = "black"),
+    hoverinfo = 'text',
+    hoveron = 'fills'
+  ) %>% 
+  layout(
+    annotations = label("Gabbroic"), ternary = QAP_G.ternaryAxes
+  ) %>% 
+  config(
+    toImageButtonOptions = list(
+      format = 'svg',
+      filename = 'Gabbroic',
+      width = 9 * 96,
+      height = 6 * 96
+    )
+  )
+QAP_G.ly
+```
+
+

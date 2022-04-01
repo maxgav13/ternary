@@ -1,0 +1,268 @@
+---
+title: "QtFL"
+author: "Maximiliano Garnier"
+# date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(RColorBrewer)
+library(viridisLite)
+library(plotly)
+library(ggtern)
+library(plyr)
+library(tidyverse)
+```
+
+# Preparing the Data
+
+Firstly, we need to create the dictionary of points.
+
+```{r}
+#Build a library of points, left to right, top to bottom...
+points.QFL = vroom::vroom("data/QFL.csv", 
+                          col_names = F, 
+                          col_types = c(.default = "d")) %>% 
+  na.omit() %>% 
+  mutate(id = 1:nrow(.)) %>% 
+  # relocate(id) 
+  select(id,X3,X1,X2)
+  
+
+colnames(points.QFL) = c("IDPoint","T","L","R")
+points.QFL
+```
+
+To visualise the points, the following code can be used:
+
+```{r}
+base.QFL <- ggtern(data=points.QFL,aes(L,T,R)) +
+  theme_bw() +
+  geom_point(shape=21,size=5,color="blue",fill="white") +
+  geom_mask() + 
+  geom_text(aes(label=IDPoint),color="blue")
+base.QFL
+```
+
+Assign each polygon a unique number and respective label.
+
+```{r}
+#Give each Polygon a number
+polygon.labels.QFL <- data.frame(
+  Label=c("Craton interior",
+          "Transitional Continental",
+          "Basement Uplift",
+          "Recycled Orogenic",
+          "Dissected Arc",
+          "Transitional Arc",
+          "Undissected Arc"),
+  Label.es = c("Cratón interior",
+          "Transición continental",
+          "Basamento elevado",
+          "Orógeno reciclado",
+          "Arco disectado",
+          "Arco transicional",
+          "Arco no disectado"))
+#Assign each label an index
+polygon.labels.QFL$IDLabel=1:nrow(polygon.labels.QFL)
+
+polygon.labels2.QFL <- data.frame(
+  Label=c("Continental Block",
+          "Recycled Orogen",
+          "Magmatic Arc"))
+#Assign each label an index
+polygon.labels2.QFL$IDLabel=1:nrow(polygon.labels2.QFL)
+```
+
+Create the map between the polygon numbers and the points which make up those numbers. Make sure they are in clockwise or anticlockwise order (but not mixed)
+
+```{r}
+#Create a map of polygons to points
+polygons.QFL <- data.frame(
+  rbind(c(1,1),c(1,3),c(1,4),c(1,2),
+        c(2,3),c(2,5),c(2,6),c(2,4),
+        c(3,5),c(3,11),c(3,12),c(3,10),c(3,6),
+        c(4,2),c(4,4),c(4,6),c(4,7),c(4,8),
+        c(5,6),c(5,10),c(5,7),
+        c(6,10),c(6,12),c(6,13),c(6,9),c(6,8),c(6,7),
+        c(7,9),c(7,13),c(7,14)
+  )
+)
+#IMPORTANT FOR CORRECT ORDERING.
+polygons.QFL$PointOrder <- 1:nrow(polygons.QFL)
+ 
+#Rename the columns
+colnames(polygons.QFL) = c("IDLabel","IDPoint","PointOrder")
+```
+
+
+```{r}
+polygons2.QFL <- data.frame(
+  rbind(c(1,1),c(1,11),c(1,12),c(1,2),
+        c(2,2),c(2,6),c(2,8),
+        c(3,6),c(3,12),c(3,14),c(3,8)
+  )
+)
+#IMPORTANT FOR CORRECT ORDERING.
+polygons2.QFL$PointOrder <- 1:nrow(polygons2.QFL)
+ 
+#Rename the columns
+colnames(polygons2.QFL) = c("IDLabel","IDPoint","PointOrder")
+```
+
+Now we merge the polygons, points and polygon labels to create a master dataframe.
+
+```{r}
+#Merge the three sets together to create a master set.
+df.QFL <- merge(polygons.QFL,points.QFL)
+df.QFL <- merge(df.QFL,polygon.labels.QFL)
+df.QFL <- df.QFL[order(df.QFL$PointOrder),]
+df.QFL = df.QFL %>% 
+  mutate(Label = as_factor(Label),
+         Label.es = as_factor(Label.es))
+```
+
+```{r}
+#Merge the three sets together to create a master set.
+df2.QFL <- merge(polygons2.QFL,points.QFL)
+df2.QFL <- merge(df2.QFL,polygon.labels2.QFL)
+df2.QFL <- df2.QFL[order(df2.QFL$PointOrder),]
+df2.QFL = df2.QFL %>% 
+  mutate(Label = as_factor(Label))
+```
+
+We also create a separate data frame for the labels positioned at the centroid of each polygon.
+
+```{r}
+#Determine the Labels Data library(plyr)
+Labs.QFL = ddply(df.QFL,"Label",
+                 function(x){c(c(mean(x$T),mean(x$L),mean(x$R)))})
+colnames(Labs.QFL) = c("Label","T","L","R")
+```
+
+Final tibble
+
+```{r}
+tb.QFL = df.QFL %>% 
+  rename(Qt=T,F=L,L=R) %>% 
+  as_tibble() %>% 
+  select(-c(1:3))
+```
+
+
+# ggplot
+
+Now we can build the final plot, which employs the geom_polygon(…) and  geom_text(…) geometries and the above data-sets, we apply some transparency so the grid can be seen through the polygons, and base the drawing of the simple theme_bw(…) arrangement.
+
+```{r}
+# QFL.pal = colorRampPalette(brewer.pal(9,'Set1'))(n_distinct(df.QFL$Label))
+QFL.pal = c("#989FA7", "#5A9AE1", "#2F4996", 
+            "#6B6943", 
+            "#BFAED2", "#DAB7A3", "#B21C3F")
+
+QFL.gg <- ggtern(data=tb.QFL,aes(F,Qt,L)) +
+  geom_polygon(aes(fill=Label,group=Label),
+               color="black",alpha=0.5) +
+  # geom_text(data=Labs.QFL,aes(label=Label),size=2,color="black",
+  #           # angle=c(60,60,60,0,0,0,0)
+  #           ) +
+  # geom_polygon(aes(col=Label,group=Label),df2.QFL,
+  #              fill="white",alpha=0,size=1) +
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  scale_fill_manual(values = QFL.pal) +
+  # scale_fill_brewer(palette = 'Set1') +
+  labs(title="QtFL",
+       fill = "Provenance",
+       T="Qt",
+       L="F",
+       R="L")
+QFL.gg
+```
+
+```{r}
+ggsave('figures/QtFL.png',QFL.gg,width = 9,height = 6,dpi = 300)
+```
+
+# plotly
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+QtFL.ternaryAxes <- list(
+  aaxis = axis("Qt"), 
+  baxis = axis("F"), 
+  caxis = axis("L")
+)
+```
+
+```{r}
+QtFL.ly = plot_ly(
+  tb.QFL,
+  a = ~Qt, b = ~F, c = ~L, 
+  color = ~Label, 
+  colors = QFL.pal %>% set_names(levels(tb.QFL$Label)),
+  type = "scatterternary",
+  fill = "toself", 
+  mode = "lines"
+) %>%
+  layout(
+    annotations = label("QtFL"), ternary = QtFL.ternaryAxes,
+    legend = list(title=list(text='<b> Provenance </b>'))
+  ) %>% 
+  config(
+    toImageButtonOptions = list(
+      format = 'svg',
+      filename = 'QtFL',
+      width = 9 * 96,
+      height = 6 * 96
+    )
+  )
+QtFL.ly
+```
+
+# New data
+
+```{r}
+new.QtFL = tibble(Qt=40,F=40,L=20)
+```
+
+```{r}
+QFL.gg + 
+  geom_point(data = new.QtFL)
+```
+
+```{r}
+QtFL.ly %>% 
+  add_trace(a = ~Qt, b = ~F, c = ~L,
+            data = new.QtFL,
+            type = "scatterternary",
+            mode = "markers",
+            hovertemplate = paste0('Qt: %{a}<br>',
+                                   'F: %{b}<br>',
+                                   'L: %{c}'),
+            inherit = F)
+```
+

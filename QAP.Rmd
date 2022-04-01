@@ -1,0 +1,290 @@
+---
+title: "QAP"
+author: "Maximiliano Garnier"
+# date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(janitor)
+library(RColorBrewer)
+library(viridisLite)
+library(plotly)
+library(ggtern)
+library(plyr)
+library(tidyverse)
+```
+
+# Preparing the Data
+
+Firstly, we need to create the dictionary of points.
+
+```{r}
+#Build a library of points, left to right, top to bottom...
+points.QAP = vroom::vroom("data/QAP.csv", 
+                          col_names = F, 
+                          col_types = c(.default = "d")) %>% 
+  na.omit() %>% 
+  mutate(id = 1:nrow(.)) %>% 
+  relocate(id)
+  # select(id,X3,X1,X2)
+  
+
+colnames(points.QAP) = c("IDPoint","T","L","R")
+points.QAP
+```
+
+To visualise the points, the following code can be used:
+
+```{r}
+base.QAP <- ggtern(data=points.QAP,aes(L,T,R)) +
+  theme_bw() +
+  geom_point(shape=21,size=5,color="blue",fill="white") +
+  geom_mask() + 
+  geom_text(aes(label=IDPoint),color="blue")
+base.QAP
+```
+
+Assign each polygon a unique number and respective label.
+
+```{r}
+#Give each Polygon a number
+polygon.labels.QAP <- data.frame(
+  Label=c("1a",'1b','2','3a','3b',
+          '4','5','6*','7*','8*',
+          '9*','10*','6','7','8','9','10'),
+  Plut.en = c('Quartzolite','Quartz-rich granitoid',
+              'Alkali feldspar granite','Syeno-granite',
+              'Monzo-granite','Granodiorite',
+              'Tonalite','Quartz alkali feldspar syenite',
+              'Quartz syenite','Quartz monzonite',
+              'Quartz monzodiorite / Quartz monzogabbro',
+              'Quartz diorite / Quartz gabbro / Quartz anorthosite',
+              'Alkali feldspar syenite','Syenite','Monzonite',
+              'Monzodiorite / Monzograbbro',
+              'Diorite / Gabbro / Anorthosite'
+  ),
+  Plut.es = c('Cuarzolita','Granitoide rico en cuarzo',
+              'Granito alcalifeldespático','Sieno-granito',
+              'Monzo-granito','Granodiorita',
+              'Tonalita','Sienita alcalifeldespática cuarzosa',
+              'Sienita cuarzosa','Monzonita cuarzosa',
+              'Monzodiorita cuarzosa / Monzogabro cuarzoso',
+              'Diorita cuarzosa / Gabro cuarzoso / Anortosita cuarzosa',
+              'Sienita alcalifeldespática','Sienita','Monzonita',
+              'Monzodiorita / Monzograbro',
+              'Diorita / Gabro / Anortosita'
+  ),
+  Volc.en = c('','',
+              'Alkali feldspar rhyolite','Rhyolite',
+              'Rhyodacite','Dacite',
+              'Plagio-dacite','Quartz alkali feldspar trachyte',
+              'Quartz trachyte','Quartz latite',
+              'Quartz latite andesite / Quartz latite basalt',
+              'Quartz andesite / Tholeiitic basalt',
+              'Alkali feldspar trachyte','Trachyte','Latite',
+              'Latite andesite / Latite basalt',
+              'Andesite / Basalt'
+  ),
+  Volc.es = c('','',
+              'Riolita alcalifeldespática','Riolita (Liparita)',
+              'Riodacita','Dacita',
+              'Plagidacita','Traquita cuarzo-alcalifeldespática',
+              'Traquita cuarzosa','Latita cuarzosa',
+              'Latiandesita cuarzosa / Latibasalto cuarzoso',
+              'Andesita cuarzosa / Basalto toleítico',
+              'Traquita alcalifeldespática','Traquita','Latita',
+              'Latiandesita / Latibasalto',
+              'Andesita / Basalto'
+  ))
+#Assign each label an index
+polygon.labels.QAP$IDLabel=1:nrow(polygon.labels.QAP)
+```
+
+Create the map between the polygon numbers and the points which make up those numbers. Make sure they are in clockwise or anticlockwise order (but not mixed)
+
+```{r}
+#Create a map of polygons to points
+polygons.QAP <- data.frame(
+  rbind(c(1,1),c(1,2),c(1,3),c(1,1),
+        c(2,2),c(2,4),c(2,5),c(2,3),c(2,2),
+        c(3,4),c(3,10),c(3,11),c(3,6),c(3,4),
+        c(4,6),c(4,11),c(4,12),c(4,7),c(4,6),
+        c(5,7),c(5,12),c(5,13),c(5,8),c(5,7),
+        c(6,8),c(6,13),c(6,14),c(6,9),c(6,8),
+        c(7,9),c(7,14),c(7,15),c(7,5),c(7,9),
+        c(8,10),c(8,16),c(8,17),c(8,11),c(8,10),
+        c(9,11),c(9,17),c(9,18),c(9,12),c(9,11),
+        c(10,12),c(10,18),c(10,19),c(10,13),c(10,12),
+        c(11,13),c(11,19),c(11,20),c(11,14),c(11,13),
+        c(12,14),c(12,20),c(12,21),c(12,15),c(12,14),
+        c(13,16),c(13,22),c(13,23),c(13,17),c(13,16),
+        c(14,17),c(14,23),c(14,24),c(14,18),c(14,17),
+        c(15,18),c(15,24),c(15,25),c(15,19),c(15,18),
+        c(16,19),c(16,25),c(16,26),c(16,20),c(16,19),
+        c(17,20),c(17,26),c(17,27),c(17,21),c(17,20)
+  )
+)
+#IMPORTANT FOR CORRECT ORDERING.
+polygons.QAP$PointOrder <- 1:nrow(polygons.QAP)
+ 
+#Rename the columns
+colnames(polygons.QAP) = c("IDLabel","IDPoint","PointOrder")
+```
+
+Now we merge the polygons, points and polygon labels to create a master dataframe.
+
+```{r}
+#Merge the three sets together to create a master set.
+df.QAP <- merge(polygons.QAP,points.QAP)
+df.QAP <- merge(df.QAP,polygon.labels.QAP)
+df.QAP <- df.QAP[order(df.QAP$PointOrder),]
+df.QAP = df.QAP %>% 
+  mutate(Label = as_factor(Label))
+```
+
+We also create a separate data frame for the labels positioned at the centroid of each polygon.
+
+```{r}
+#Determine the Labels Data library(plyr)
+Labs.QAP = ddply(df.QAP,"Label",
+                 function(x){c(c(mean(x$T),mean(x$L),mean(x$R)))})
+colnames(Labs.QAP) = c("Label","Q","A","P")
+```
+
+Final tibble
+
+```{r}
+tb.QAP = df.QAP %>% 
+  rename(Q=T,A=L,P=R) %>% 
+  as_tibble() %>% 
+  select(-c(1:3))
+```
+
+
+# ggplot
+
+Now we can build the final plot, which employs the geom_polygon(…) and  geom_text(…) geometries and the above data-sets, we apply some transparency so the grid can be seen through the polygons, and base the drawing of the simple theme_bw(…) arrangement.
+
+```{r}
+
+QAP.gg <- ggtern(data=tb.QAP,aes(A,Q,P)) +
+  geom_polygon(fill='white',aes(group=Label),
+               color="black",alpha=0.05) +
+  geom_text(data=Labs.QAP,aes(label=Label),size=2.5,color="black") +
+  theme_bw() +
+  theme_arrowdefault() +
+  theme_clockwise() +
+  # custom_percent("Percent") +
+  labs(title="QAP",
+       T="Q",
+       L="A",
+       R="P")
+QAP.gg
+```
+
+```{r}
+ggsave('figures/QAP.png',QAP.gg,width = 9,height = 6,dpi = 300)
+```
+
+# plotly
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+QAP.ternaryAxes <- list(
+  aaxis = axis("Q"), 
+  baxis = axis("A"), 
+  caxis = axis("P")
+)
+```
+
+```{r}
+QAP.ly = plot_ly() %>% 
+  add_trace(
+    data = tb.QAP,
+    a = ~Q, b = ~A, c = ~P, 
+    color = ~Label,
+    # colors = QAP.pal %>% set_names(levels(tb.QAP$Label)),
+    colors = 'transparent',
+    type = "scatterternary",
+    fill = "toself",
+    mode = "lines",
+    line = list(color = "black"),
+    hoverinfo = 'text',
+    text = ~paste('</br>', Label,
+                  '</br>', Plut.es),
+    hoveron = 'fills'
+) %>%
+  add_trace(
+    data = Labs.QAP,
+    a = ~Q, b = ~A, c = ~P,
+    text = ~Label,
+    type = "scatterternary",
+    mode = "text",
+    name = 'ID',
+    hoverinfo = 'none',
+    textfont = list(family= "Arial", size= 12, color= "Black"),
+    showlegend = T
+  ) %>% 
+  layout(
+    annotations = label("QAP"), ternary = QAP.ternaryAxes
+  ) %>% 
+  config(
+    toImageButtonOptions = list(
+      format = 'svg',
+      filename = 'QAP',
+      width = 9 * 96,
+      height = 6 * 96
+    )
+  )
+QAP.ly
+```
+
+# New data
+
+```{r}
+new.QAP = tibble(Q=c(23,26.9,8.5),
+                 A=c(27,23.7,5.1),
+                 P=c(36,39.8,59.6))
+```
+
+```{r}
+QAP.gg + 
+  geom_point(data = new.QAP)
+```
+
+```{r}
+QAP.ly %>% 
+  add_trace(a = ~Q, b = ~A, c = ~P,
+            data = new.QAP,
+            name = 'New',
+            type = "scatterternary",
+            mode = "markers",
+            symbol = I('+'),
+            marker = list(size=10,color='coral'),
+            hovertemplate = paste0('Q: %{a}<br>',
+                                   'A: %{b}<br>',
+                                   'P: %{c}'))
+```
+
