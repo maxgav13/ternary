@@ -16,14 +16,14 @@ qap_m = function(output = c('ggplot','plotly'),
     10,90,0,"Troctolite","Troctolita",
     5,90,5,"Troctolite","Troctolita",
     90,5,5,"Troctolite","Troctolita",
-    90,5,5,"Olivine gabbro /,
-        Olivine norite","Gabro olivínoco /,
+    90,5,5,"Olivine gabbro /
+        Olivine norite","Gabro olivínoco /
         Norita olivínica",
-    5,90,5,"Olivine gabbro /,
-        Olivine norite","Gabro olivínoco /,
+    5,90,5,"Olivine gabbro /
+        Olivine norite","Gabro olivínoco /
         Norita olivínica",
-    5,5,90,"Olivine gabbro /,
-        Olivine norite","Gabro olivínoco /,
+    5,5,90,"Olivine gabbro /
+        Olivine norite","Gabro olivínoco /
         Norita olivínica",
     90,0,10,"Gabbro / Norite","Gabro / Norita",
     90,5,5,"Gabbro / Norite","Gabro / Norita",
@@ -32,30 +32,30 @@ qap_m = function(output = c('ggplot','plotly'),
     10,90,0,"Dunite","Dunita",
     0,100,0,"Dunite","Dunita",
     0,90,10,"Dunite","Dunita",
-    5,90,5,"Wehrlite /,
-        Harzburgite","Wehrlita /,
+    5,90,5,"Wehrlite /
+        Harzburgite","Wehrlita /
         Harzburgita",
-    0,90,10,"Wehrlite /,
-        Harzburgite","Wehrlita /,
+    0,90,10,"Wehrlite /
+        Harzburgite","Wehrlita /
         Harzburgita",
-    0,42.5,57.5,"Wehrlite /,
-        Harzburgite","Wehrlita /,
+    0,42.5,57.5,"Wehrlite /
+        Harzburgite","Wehrlita /
         Harzburgita",
-    5,40,55,"Wehrlite /,
-        Harzburgite","Wehrlita /,
+    5,40,55,"Wehrlite /
+        Harzburgite","Wehrlita /
         Harzburgita",
     5,40,55,"Olivine clino/orto-pyroxenite","Clino/Orto-piroxenita olivínica",
     0,42.5,57.5,"Olivine clino/orto-pyroxenite","Clino/Orto-piroxenita olivínica",
     0,10,90,"Olivine clino/orto-pyroxenite","Clino/Orto-piroxenita olivínica",
     5,5,90,"Olivine clino/orto-pyroxenite","Clino/Orto-piroxenita olivínica",
-    10,0,90,"Clinopyroxenite /,
-        Orthopyroxenite","Clinopiroxenita /,
+    10,0,90,"Clinopyroxenite /
+        Orthopyroxenite","Clinopiroxenita /
         Ortopiroxenita",
-    0,10,90,"Clinopyroxenite /,
-        Orthopyroxenite","Clinopiroxenita /,
+    0,10,90,"Clinopyroxenite /
+        Orthopyroxenite","Clinopiroxenita /
         Ortopiroxenita",
-    0,0,100,"Clinopyroxenite /,
-        Orthopyroxenite","Clinopiroxenita /,
+    0,0,100,"Clinopyroxenite /
+        Orthopyroxenite","Clinopiroxenita /
         Ortopiroxenita") %>% 
     dplyr::mutate(dplyr::across(Label.en:Label.es,forcats::as_factor))
   

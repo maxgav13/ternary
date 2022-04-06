@@ -82,7 +82,7 @@ qap_um = function(output = c('ggplot','plotly'),
                             color="black",alpha=0.5) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::scale_fill_manual('',values = viridis(10,direction = -1,option = 'D')) +
+      ggplot2::scale_fill_manual('',values = QAP_UM.pal) +
       ggplot2::labs(title="Ultramafic",
                     T="Ol",
                     L="Opx",
@@ -93,7 +93,7 @@ qap_um = function(output = c('ggplot','plotly'),
                             color="black",alpha=0.5) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::scale_fill_manual('',values = viridis(10,direction = -1,option = 'D')) +
+      ggplot2::scale_fill_manual('',values = QAP_UM.pal) +
       ggplot2::labs(title="Ultramaficas",
                     T="Ol",
                     L="Opx",

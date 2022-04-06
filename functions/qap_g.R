@@ -37,7 +37,7 @@ qap_g = function(output = c('ggplot','plotly'),
     0,   10,   90,      "Orthopyroxenite",         "Ortopiroxenita",
     0,    0,  100,      "Orthopyroxenite",         "Ortopiroxenita"
   ) %>% 
-    dplyr::mutate(dplyr::across(Label:Label.es,forcats::as_factor))
+    dplyr::mutate(dplyr::across(Label.en:Label.es,forcats::as_factor))
   
   
   # reusable function for creating annotation object

@@ -9,17 +9,17 @@ pyroclastic = function(output = c('ggplot','plotly'),
   
   tb.pyro = tibble::tribble(
     ~BB, ~Lapilli, ~Ash, ~Label, ~Label.es,
-    100,0,0,"Pyroclastic breccia /,
-        Agglomerate","Brecha piroclástica /,
+    100,0,0,"Pyroclastic breccia /
+        Agglomerate","Brecha piroclástica /
         Aglomerado",
-    75,25,0,"Pyroclastic breccia /,
-        Agglomerate","Brecha piroclástica /,
+    75,25,0,"Pyroclastic breccia /
+        Agglomerate","Brecha piroclástica /
         Aglomerado",
-    75,0,25,"Pyroclastic breccia /,
-        Agglomerate","Brecha piroclástica /,
+    75,0,25,"Pyroclastic breccia /
+        Agglomerate","Brecha piroclástica /
         Aglomerado",
-    100,0,0,"Pyroclastic breccia /,
-        Agglomerate","Brecha piroclástica /,
+    100,0,0,"Pyroclastic breccia /
+        Agglomerate","Brecha piroclástica /
         Aglomerado",
     75,25,0,"Lapilli-tuff breccia","Toba brechosa",
     25,75,0,"Lapilli-tuff breccia","Toba brechosa",
