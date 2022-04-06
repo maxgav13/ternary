@@ -1,4 +1,4 @@
-shepard = function(output = c('ggplot','plotly'), 
+ternary_shepard = function(output = c('ggplot','plotly'), 
                    language = c('en','es')) {
   
   # library(ggplot2)

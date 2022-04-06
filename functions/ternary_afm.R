@@ -1,4 +1,4 @@
-afm = function(output = c('ggplot','plotly'), 
+ternary_afm = function(output = c('ggplot','plotly'), 
                language = c('en','es')) {
   
   # library(ggplot2)

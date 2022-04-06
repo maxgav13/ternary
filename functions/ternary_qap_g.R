@@ -1,4 +1,4 @@
-qap_g = function(output = c('ggplot','plotly'), 
+ternary_qap_g = function(output = c('ggplot','plotly'), 
                  language = c('en','es')) {
   
   # library(ggplot2)

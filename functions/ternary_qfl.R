@@ -1,4 +1,4 @@
-qfl = function(output = c('ggplot','plotly'), 
+ternary_qfl = function(output = c('ggplot','plotly'), 
                language = c('en','es')) {
   
   # library(ggplot2)

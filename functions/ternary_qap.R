@@ -1,4 +1,4 @@
-qap = function(type = c('plutonic','volcanic'),
+ternary_qap = function(type = c('plutonic','volcanic'),
                output = c('ggplot','plotly'), 
                language = c('en','es')) {
   
