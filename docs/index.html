@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Maximiliano Garnier-Villarreal" />
+
+
+<title>Ternary diagrams</title>
+
+<script src="site_libs/jquery-3.5.1/jquery-3.5.1.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Ternary diagrams</h1>
+<h4 class="author">Maximiliano Garnier-Villarreal</h4>
+
+</div>
+
+
+<div id="diagrams" class="section level1">
+<h1>Diagrams</h1>
+<p>This document shows how to display and use, in <strong>R</strong>, different ternary diagrams that are used regularly in geosciences, these are:</p>
+<ul>
+<li><p>QAP - <code>ternary_qap()</code></p></li>
+<li><p>QAP for gabbros - <code>ternary_qap_g()</code></p></li>
+<li><p>QAP for mafic rocks - <code>ternary_qap_m()</code></p></li>
+<li><p>QAP for ultramafic rocks - <code>ternary_qap_um()</code></p></li>
+<li><p>QFL for provenance - <code>ternary_qfl()</code></p></li>
+<li><p>QmFLt for provenance - <code>ternary_qmflt()</code></p></li>
+<li><p>AFM - <code>ternary_afm()</code></p></li>
+<li><p>Pyroclastic rocks - <code>ternary_pyroclastic()</code></p></li>
+<li><p>Folk sandstone classification - <code>ternary_folk()</code></p></li>
+<li><p>Shepard soil classification - <code>ternary_shepard()</code></p></li>
+</ul>
+</div>
+<div id="use" class="section level1">
+<h1>Use</h1>
+<div id="static" class="section level2">
+<h2>Static</h2>
+<p>A simple static diagram without data can be obtained by just calling the respective function. The result is a <strong>ggplot2</strong> object based on the <strong>ggtern</strong> package.</p>
+<pre class="r"><code>ternary_folk()</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="dynamic" class="section level2">
+<h2>Dynamic</h2>
+<p>To obtain a dynamic diagram the <code>output</code> argument must be set to <code>'plotly'</code>, resulting in a <strong>plotly</strong> object.</p>
+<pre class="r"><code>ternary_qap_m(output = &#39;plotly&#39;)</code></pre>
+<div id="htmlwidget-8d3dbdacbc99c2e2d305" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8d3dbdacbc99c2e2d305">{"x":{"visdat":{"62ca54397cdb":["function () ","plotlyVisDat"],"62caa343910":["function () ","data"]},"cur_data":"62caa343910","attrs":{"62caa343910":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"a":{},"b":{},"c":{},"color":{},"colors":["#FAEBDDFF","#F6B48EFF","#F37651FF","#E13342FF","#AE1759FF","#701F57FF","#36193EFF","#03051AFF"],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":"text","hoveron":"fills","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"annotations":[{"text":"Mafic","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2},{"text":"Mafic","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2},{"text":"Mafic","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2}],"ternary":{"aaxis":{"title":"P","tickformat":".0%","tickfont":{"size":10}},"baxis":{"title":"Ol","tickformat":".0%","tickfont":{"size":10}},"caxis":{"title":"Px","tickformat":".0%","tickfont":{"size":10}}},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false,"toImageButtonOptions":{"format":"svg","filename":"Mafic","width":864,"height":576}},"data":[{"fillcolor":"rgba(250,235,221,0.5)","a":[100,90,90],"b":[0,10,0],"c":[0,0,10],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text"],"hoveron":"fills","name":"Anorthosite","marker":{"color":"rgba(250,235,221,1)","line":{"color":"rgba(250,235,221,1)"}},"textfont":{"color":"rgba(250,235,221,1)"},"frame":null,"text":""},{"fillcolor":"rgba(246,180,142,0.5)","a":[90,10,5,90],"b":[10,90,90,5],"c":[0,0,5,5],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text","text"],"hoveron":"fills","name":"Troctolite","marker":{"color":"rgba(246,180,142,1)","line":{"color":"rgba(246,180,142,1)"}},"textfont":{"color":"rgba(246,180,142,1)"},"frame":null,"text":""},{"fillcolor":"rgba(243,118,81,0.5)","a":[90,5,5],"b":[5,90,5],"c":[5,5,90],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text"],"hoveron":"fills","name":"Olivine gabbro /<br />        Olivine norite","marker":{"color":"rgba(243,118,81,1)","line":{"color":"rgba(243,118,81,1)"}},"textfont":{"color":"rgba(243,118,81,1)"},"frame":null,"text":""},{"fillcolor":"rgba(225,51,66,0.5)","a":[90,90,5,10],"b":[0,5,5,0],"c":[10,5,90,90],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text","text"],"hoveron":"fills","name":"Gabbro / Norite","marker":{"color":"rgba(225,51,66,1)","line":{"color":"rgba(225,51,66,1)"}},"textfont":{"color":"rgba(225,51,66,1)"},"frame":null,"text":""},{"fillcolor":"rgba(174,23,89,0.5)","a":[10,0,0],"b":[90,100,90],"c":[0,0,10],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text"],"hoveron":"fills","name":"Dunite","marker":{"color":"rgba(174,23,89,1)","line":{"color":"rgba(174,23,89,1)"}},"textfont":{"color":"rgba(174,23,89,1)"},"frame":null,"text":""},{"fillcolor":"rgba(112,31,87,0.5)","a":[5,0,0,5],"b":[90,90,42.5,40],"c":[5,10,57.5,55],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text","text"],"hoveron":"fills","name":"Wehrlite /<br />        Harzburgite","marker":{"color":"rgba(112,31,87,1)","line":{"color":"rgba(112,31,87,1)"}},"textfont":{"color":"rgba(112,31,87,1)"},"frame":null,"text":""},{"fillcolor":"rgba(54,25,62,0.5)","a":[5,0,0,5],"b":[40,42.5,10,5],"c":[55,57.5,90,90],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text","text"],"hoveron":"fills","name":"Olivine clino/orto-pyroxenite","marker":{"color":"rgba(54,25,62,1)","line":{"color":"rgba(54,25,62,1)"}},"textfont":{"color":"rgba(54,25,62,1)"},"frame":null,"text":""},{"fillcolor":"rgba(3,5,26,0.5)","a":[10,0,0],"b":[0,10,0],"c":[90,90,100],"type":"scatterternary","fill":"toself","mode":"lines","line":{"color":"black"},"hoverinfo":["text","text","text"],"hoveron":"fills","name":"Clinopyroxenite /<br />        Orthopyroxenite","marker":{"color":"rgba(3,5,26,1)","line":{"color":"rgba(3,5,26,1)"}},"textfont":{"color":"rgba(3,5,26,1)"},"frame":null,"text":""}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="add-your-data" class="section level2">
+<h2>Add your data!!</h2>
+<p>To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the <a href="#tb-names">Names</a> section where the respective names are given for each diagram (function). <strong>The point totals (adding the three components) are not required to add to 100%.</strong></p>
+<p>This is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (<strong>ggplot2</strong>), and then ploting the same data in the dynamic diagram (<strong>plotly</strong>).</p>
+<pre class="r"><code>d = tibble(Qt=c(40,30),F=c(40,20),L=c(20,10))
+
+ternary_qfl() + 
+  geom_point(data = d,
+             color = &#39;forestgreen&#39;,
+             size = 2,
+             alpha = .7)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>For the <strong>plotly</strong> object (diagram) the data must be mapped in the following order: <code>a</code> is the top vertix, <code>b</code> is the bottom left vertix, and <code>c</code> is th bottom right vertix. The things tha can be changed are the <code>data</code>, the <code>name</code> that is displayed in the legend, and the <code>marker</code> charcateristics; the rest is recommended not to be modified.</p>
+<pre class="r"><code>ternary_qfl(output = &#39;plotly&#39;) %&gt;% 
+  add_trace(a = ~Qt, b = ~F, c = ~L,
+            data = d,
+            name = &#39;My data&#39;,
+            marker = list(size = 8,
+                          color = &#39;green&#39;,
+                          opacity = .7),
+            type = &quot;scatterternary&quot;,
+            mode = &quot;markers&quot;,
+            hovertemplate = paste0(&#39;Qt: %{a}&lt;br&gt;&#39;,
+                                   &#39;F: %{b}&lt;br&gt;&#39;,
+                                   &#39;L: %{c}&#39;),
+            inherit = F)</code></pre>
+<div id="htmlwidget-3df1b676ac412488ec8e" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3df1b676ac412488ec8e">{"x":{"visdat":{"62caec0edcd":["function () ","plotlyVisDat"],"62ca1c3c354c":["function () ","data"],"62ca34cf1f0f":["function () ","data"]},"cur_data":"62ca34cf1f0f","attrs":{"62ca1c3c354c":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"a":{},"b":{},"c":{},"color":{},"colors":["#989FA7","#5A9AE1","#2F4996","#6B6943","#BFAED2","#DAB7A3","#B21C3F"],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","inherit":true},"62ca34cf1f0f":{"a":{},"b":{},"c":{},"name":"My data","marker":{"size":8,"color":"green","opacity":0.7},"type":"scatterternary","mode":"markers","hovertemplate":"Qt: %{a}<br>F: %{b}<br>L: %{c}","inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"annotations":[{"text":"QtFL","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2},{"text":"QtFL","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2},{"text":"QtFL","x":0.1,"y":1,"ax":0,"ay":0,"xref":"paper","yref":"paper","align":"center","font":{"family":"serif","size":15,"color":"white"},"bgcolor":"#b3b3b3","bordercolor":"black","borderwidth":2}],"ternary":{"aaxis":{"title":"Qt","tickformat":".0%","tickfont":{"size":10}},"baxis":{"title":"F","tickformat":".0%","tickfont":{"size":10}},"caxis":{"title":"L","tickformat":".0%","tickfont":{"size":10}}},"legend":{"title":{"text":"<b> Provenance <\/b>"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false,"toImageButtonOptions":{"format":"svg","filename":"QtFL","width":864,"height":576}},"data":[{"fillcolor":"rgba(152,159,167,0.5)","a":[100,82,80,97],"b":[0,18,15,0],"c":[0,0,5,3],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Craton interior","marker":{"color":"rgba(152,159,167,1)","line":{"color":"rgba(152,159,167,1)"}},"textfont":{"color":"rgba(152,159,167,1)"},"line":{"color":"rgba(152,159,167,1)"},"frame":null,"text":""},{"fillcolor":"rgba(90,154,225,0.5)","a":[82,55,52,80],"b":[18,45,40,15],"c":[0,0,8,5],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Transitional Continental","marker":{"color":"rgba(90,154,225,1)","line":{"color":"rgba(90,154,225,1)"}},"textfont":{"color":"rgba(90,154,225,1)"},"line":{"color":"rgba(90,154,225,1)"},"frame":null,"text":""},{"fillcolor":"rgba(47,73,150,0.5)","a":[55,0,0,20,52],"b":[45,100,85,67.7,40],"c":[0,0,15,12.3,8],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Basement Uplift","marker":{"color":"rgba(47,73,150,1)","line":{"color":"rgba(47,73,150,1)"}},"textfont":{"color":"rgba(47,73,150,1)"},"line":{"color":"rgba(47,73,150,1)"},"frame":null,"text":""},{"fillcolor":"rgba(107,105,67,0.5)","a":[97,80,52,33.781,25],"b":[0,15,40,12.897,0],"c":[3,5,8,53.322,75],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Recycled Orogenic","marker":{"color":"rgba(107,105,67,1)","line":{"color":"rgba(107,105,67,1)"}},"textfont":{"color":"rgba(107,105,67,1)"},"line":{"color":"rgba(107,105,67,1)"},"frame":null,"text":""},{"fillcolor":"rgba(191,174,210,0.5)","a":[52,20,33.781],"b":[40,67.7,12.897],"c":[8,12.3,53.322],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Dissected Arc","marker":{"color":"rgba(191,174,210,1)","line":{"color":"rgba(191,174,210,1)"}},"textfont":{"color":"rgba(191,174,210,1)"},"line":{"color":"rgba(191,174,210,1)"},"frame":null,"text":""},{"fillcolor":"rgba(218,183,163,0.5)","a":[20,0,0,25,25,33.781],"b":[67.7,85,50,0,0,12.897],"c":[12.3,15,50,75,75,53.322],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Transitional Arc","marker":{"color":"rgba(218,183,163,1)","line":{"color":"rgba(218,183,163,1)"}},"textfont":{"color":"rgba(218,183,163,1)"},"line":{"color":"rgba(218,183,163,1)"},"frame":null,"text":""},{"fillcolor":"rgba(178,28,63,0.5)","a":[25,0,0],"b":[0,50,0],"c":[75,50,100],"type":"scatterternary","fill":"toself","mode":"lines","hoveron":"fills","name":"Undissected Arc","marker":{"color":"rgba(178,28,63,1)","line":{"color":"rgba(178,28,63,1)"}},"textfont":{"color":"rgba(178,28,63,1)"},"line":{"color":"rgba(178,28,63,1)"},"frame":null,"text":""},{"a":[40,30],"b":[40,20],"c":[20,10],"name":"My data","marker":{"color":"green","size":8,"opacity":0.7,"line":{"color":"rgba(127,127,127,1)"}},"type":"scatterternary","mode":"markers","hovertemplate":["Qt: %{a}<br>F: %{b}<br>L: %{c}","Qt: %{a}<br>F: %{b}<br>L: %{c}"],"line":{"color":"rgba(127,127,127,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="tb-names" class="section level2">
+<h2>Names</h2>
+<p>These are the names that your data table must have for you to be able to plot your data in the corresponding diagram.</p>
+<ul>
+<li><p><code>ternary_qap()</code>: Q, A, P</p></li>
+<li><p><code>ternary_qap_g()</code>: Cpx, P, Opx</p></li>
+<li><p><code>ternary_qap_m()</code>: Ol, P, Px</p></li>
+<li><p><code>ternary_qap_um()</code>: Opx, Ol, Cpx</p></li>
+<li><p><code>ternary_qfl()</code>: Qt, F, L</p></li>
+<li><p><code>ternary_qmflt()</code>: F, Qm, Lt</p></li>
+<li><p><code>ternary_afm()</code>: A, F, M</p></li>
+<li><p><code>ternary_pyroclastic()</code>: Lapilli, BB, Ash</p></li>
+<li><p><code>ternary_folk()</code>: F, Q, R</p></li>
+<li><p><code>ternary_shepard()</code>: Sand, Clay, Silt</p></li>
+</ul>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>This is very basic and quick introduction on how to use the <code>ternary_*</code> functions to plot ternary diagrams in <strong>R</strong>. Further customization of the diagramas can be achived by manipulating the <strong>ggplot2</strong> or <strong>plotly</strong> objects, specially when adding your own data.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

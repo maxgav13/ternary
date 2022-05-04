@@ -1,0 +1,129 @@
+---
+title: "Ternary diagrams"
+author: "Maximiliano Garnier-Villarreal"
+output: 
+  bookdown::html_document2:
+    theme: flatly
+    number_sections: false
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+    social: ['menu']
+    theme: flatly # bootstrap, cerulean, flatly, united, sandstone, yeti
+---
+
+```{r setup, include=FALSE, message=FALSE}
+# library(flexdashboard)
+library(plotly)
+library(tidyverse)
+
+lapply(fs::dir_ls('functions/'), source)
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Diagrams
+
+This document shows how to display and use, in **R**, different ternary diagrams that are used regularly in geosciences, these are:
+
+-   QAP - `ternary_qap()`
+
+-   QAP for gabbros - `ternary_qap_g()`
+
+-   QAP for mafic rocks - `ternary_qap_m()`
+
+-   QAP for ultramafic rocks - `ternary_qap_um()`
+
+-   QFL for provenance - `ternary_qfl()`
+
+-   QmFLt for provenance - `ternary_qmflt()`
+
+-   AFM - `ternary_afm()`
+
+-   Pyroclastic rocks - `ternary_pyroclastic()`
+
+-   Folk sandstone classification - `ternary_folk()`
+
+-   Shepard soil classification - `ternary_shepard()`
+
+# Use
+
+## Static
+
+A simple static diagram without data can be obtained by just calling the respective function. The result is a **ggplot2** object based on the **ggtern** package.
+
+```{r}
+ternary_folk()
+```
+
+## Dynamic
+
+To obtain a dynamic diagram the `output` argument must be set to `'plotly'`, resulting in a **plotly** object.
+
+```{r}
+ternary_qap_m(output = 'plotly')
+```
+
+## Add your data!!
+
+To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function). **The point totals (adding the three components) are not required to add to 100%.**
+
+This is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**).
+
+```{r}
+d = tibble(Qt=c(40,30),F=c(40,20),L=c(20,10))
+
+ternary_qfl() + 
+  geom_point(data = d,
+             color = 'forestgreen',
+             size = 2,
+             alpha = .7)
+```
+
+For the **plotly** object (diagram) the data must be mapped in the following order: `a` is the top vertix, `b` is the bottom left vertix, and `c` is th bottom right vertix. The things tha can be changed are the `data`, the `name` that is displayed in the legend, and the `marker` charcateristics; the rest is recommended not to be modified.
+
+```{r}
+ternary_qfl(output = 'plotly') %>% 
+  add_trace(a = ~Qt, b = ~F, c = ~L,
+            data = d,
+            name = 'My data',
+            marker = list(size = 8,
+                          color = 'green',
+                          opacity = .7),
+            type = "scatterternary",
+            mode = "markers",
+            hovertemplate = paste0('Qt: %{a}<br>',
+                                   'F: %{b}<br>',
+                                   'L: %{c}'),
+            inherit = F)
+```
+
+## Names {#tb-names}
+
+These are the names that your data table must have for you to be able to plot your data in the corresponding diagram.
+
+- `ternary_qap()`: Q, A, P
+
+- `ternary_qap_g()`: Cpx, P, Opx
+
+- `ternary_qap_m()`: Ol, P, Px
+
+- `ternary_qap_um()`: Opx, Ol, Cpx
+
+- `ternary_qfl()`: Qt, F, L
+
+- `ternary_qmflt()`: F, Qm, Lt
+
+- `ternary_afm()`: A, F, M
+
+- `ternary_pyroclastic()`: Lapilli, BB, Ash
+
+- `ternary_folk()`: F, Q, R
+
+- `ternary_shepard()`: Sand, Clay, Silt
+
+
+# Conclusion
+
+This is very basic and quick introduction on how to use the `ternary_*` functions to plot ternary diagrams in **R**. Further customization of the diagramas can be achived by manipulating the **ggplot2** or **plotly** objects, specially when adding your own data.
