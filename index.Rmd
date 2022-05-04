@@ -75,7 +75,7 @@ ternary_qap_m(output = 'plotly')
 
 To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function). 
 
-**The point totals (adding the three components) are not required to add-up to 100%.**
+**The sample (row) totals (adding the three components) are not required to add-up to 100%, this is done internally.**
 
 Adding some data is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**). 
 
