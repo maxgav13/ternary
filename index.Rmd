@@ -5,22 +5,16 @@ output:
   bookdown::html_document2:
     theme: flatly
     number_sections: false
-  flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
-    source_code: embed
-    social: ['menu']
-    theme: flatly # bootstrap, cerulean, flatly, united, sandstone, yeti
 ---
 
-```{r setup, include=FALSE, message=FALSE}
-# library(flexdashboard)
+# Setup
+
+```{r setup, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
 library(plotly)
 library(tidyverse)
 
-lapply(fs::dir_ls('functions/'), source)
-
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 # Diagrams
@@ -51,13 +45,19 @@ This document shows how to display and use, in **R**, different ternary diagrams
 
 ## Load functions
 
-To load all the functions at once the following command can be used: `lapply(fs::dir_ls('functions/'), source)`.
+To load all the functions at once the following command can be used:
+
+```{r results='hide'}
+lapply(fs::dir_ls('functions/'), source)
+```
 
 ## Static
 
 A simple static diagram without data can be obtained by just calling the respective function. The result is a **ggplot2** object based on the **ggtern** package.
 
 ```{r}
+#| fig.cap: Static Folk ternary diagram for sandstones
+
 ternary_folk()
 ```
 
@@ -66,16 +66,20 @@ ternary_folk()
 To obtain a dynamic diagram the `output` argument must be set to 'plotly', resulting in a **plotly** object.
 
 ```{r}
+#| fig.cap: Dynamic QAP ternary diagram for mafic rocks
+
 ternary_qap_m(output = 'plotly')
 ```
 
 ## Add your data!!
 
-To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function). **The point totals (adding the three components) are not required to add to 100%.**
+To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function). 
 
-This is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**). 
+**The point totals (adding the three components) are not required to add-up to 100%.**
 
-In these data the first sample (point) adds to a 100 but the second one does not, showing that point made above.
+Adding some data is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**). 
+
+In these data the first sample (point) adds-up to a 100 but the second one does not, showing that point made above.
 
 ```{r}
 d = tibble(Qt=c(40,30),F=c(40,20),L=c(20,10))
@@ -84,6 +88,8 @@ d
 
 
 ```{r}
+#| fig.cap: Static QtFL ternary diagram for provenance, with user's data
+
 ternary_qfl() + 
   geom_point(data = d,
              color = 'forestgreen',
@@ -94,6 +100,8 @@ ternary_qfl() +
 For the **plotly** object (diagram) the data must be mapped in the following order: `a` is the top vertix, `b` is the bottom left vertix, and `c` is th bottom right vertix. The things tha can be changed are the `data`, the `name` that is displayed in the legend, and the `marker` charcateristics; the rest is recommended not to be modified.
 
 ```{r}
+#| fig.cap: Dynamic QtFL ternary diagram for provenance, with user's data
+
 ternary_qfl(output = 'plotly') %>% 
   add_trace(a = ~Qt, b = ~F, c = ~L,
             data = d,
@@ -133,11 +141,13 @@ These are the names that your data table must have for you to be able to plot yo
 
 - `ternary_shepard()`: Sand, Clay, Silt
 
-## Spanish (Español)
+## Español (Spanish)
 
-A spanish version is available for all the diagrams, to display this version the `language` argument must be set to 'es', by default is set to english ('en').
+Todos los diagramas se pueden generar en español, para ello es necesario usar el argumento `language` y ponerlo igual a 'es', por defecto se despliegan en inglés ('en'). [A spanish version is available for all the diagrams, to display this version the `language` argument must be set to 'es', by default is set to english ('en').]
 
 ```{r}
+#| fig.cap: Diagrama ternario de Shepard para la clasificación de suelos, en español
+
 ternary_shepard(language = 'es')
 ```
 
