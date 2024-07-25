@@ -119,7 +119,7 @@ ternary_qap = function(type = c('plutonic','volcanic'),
       ax = 0, ay = 0,
       xref = "paper", yref = "paper", 
       align = "center",
-      font = list(family = "serif", size = 15, color = "white"),
+      font = list(size = 15, color = "white"),
       bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
     )
   }
@@ -137,11 +137,12 @@ ternary_qap = function(type = c('plutonic','volcanic'),
     caxis = axis("P")
   )
   
-  if (any(type == 'plutonic' & output == 'ggplot')) {
+  if (any(output == 'ggplot')) {
     QAP <- ggtern::ggtern(data=tb.QAP,ggtern::aes(A,Q,P)) +
       ggplot2::geom_polygon(fill='white',aes(group=Label),
                             color="black",alpha=0.05) +
-      ggplot2::geom_text(data=Labs.QAP,aes(label=Label),size=2.5,color="black") +
+      ggplot2::geom_text(data=Labs.QAP,aes(label=Label),
+                         size=2.5,color="black",show.legend = T) +
       ggplot2::theme_bw() +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
