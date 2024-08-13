@@ -1,6 +1,6 @@
-ternary_pyroclastic = function(output = c('ggplot','plotly'), 
-                               language = c('en','es'),
-                               opacity = .5) {
+ternary_pyroclastic_size = function(output = c('ggplot','plotly'), 
+                                    language = c('en','es'),
+                                    opacity = .5) {
   
   # library(ggplot2)
   # library(ggtern)
@@ -80,6 +80,7 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
       ggplot2::geom_polygon(aes(fill=Label,color=Label,
                                 group=Label),
                             alpha=opacity) +
+      ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_brewer(palette = 'Set1') +
@@ -94,6 +95,7 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
       ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,
                                 group=Label.es),
                             alpha=opacity) +
+      ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_brewer(palette = 'Set1') +
@@ -117,12 +119,13 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
       ) %>% 
       plotly::layout(
         ternary = pyro.ternaryAxes.en,
-        legend = list(title=list(text='<b> Pyroclastic rock </b>'))
+        legend = list(title=list(text='<b> Pyroclastic rock </b>')),
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(
           format = 'svg',
-          filename = 'Pyroclastic',
+          filename = 'Pyroclastic_size',
           width = 9 * 96,
           height = 6 * 96
         )
@@ -141,12 +144,13 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
       ) %>% 
       plotly::layout(
         ternary = pyro.ternaryAxes.es,
-        legend = list(title=list(text='<b> Roca piroclástica </b>'))
+        legend = list(title=list(text='<b> Roca piroclástica </b>')),
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(
           format = 'svg',
-          filename = 'Pyroclastic',
+          filename = 'Pyroclastic_size',
           width = 9 * 96,
           height = 6 * 96
         )

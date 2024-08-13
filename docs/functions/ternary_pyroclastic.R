@@ -1,5 +1,6 @@
 ternary_pyroclastic = function(output = c('ggplot','plotly'), 
-                       language = c('en','es')) {
+                               language = c('en','es'),
+                               opacity = .5) {
   
   # library(ggplot2)
   # library(ggtern)
@@ -49,7 +50,7 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
       ax = 0, ay = 0,
       xref = "paper", yref = "paper", 
       align = "center",
-      font = list(family = "serif", size = 15, color = "white"),
+      font = list(size = 15, color = "white"),
       bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
     )
   }
@@ -76,25 +77,29 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     pyro <- ggtern::ggtern(data=tb.pyro,ggtern::aes(Lapilli,BB,Ash)) +
-      ggplot2::geom_polygon(aes(fill=Label,group=Label),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(aes(fill=Label,color=Label,
+                                group=Label),
+                            alpha=opacity) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_brewer(palette = 'Set1') +
-      ggplot2::labs(title="Pyroclastic",
-                    fill = "",
+      ggplot2::scale_color_brewer(palette = 'Set1') +
+      ggplot2::labs(fill = "Pyroclastic rock",
+                    color = "Pyroclastic rock",
                     T="Blocks &\nBombs (> 64 mm)",
                     L="Lapilli\n(2-64 mm)",
                     R="Ash\n(< 2 mm)")
   } else if (any(output == 'ggplot' & language == 'es')) {
     pyro <- ggtern::ggtern(data=tb.pyro,ggtern::aes(Lapilli,BB,Ash)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,group=Label.es),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,
+                                group=Label.es),
+                            alpha=opacity) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_brewer(palette = 'Set1') +
-      ggplot2::labs(title="Piroclásticas",
-                    fill = "",
+      ggplot2::scale_color_brewer(palette = 'Set1') +
+      ggplot2::labs(fill = "Roca piroclástica",
+                    color = "Roca piroclástica",
                     T="Bloques &\nBombas (> 64 mm)",
                     L="Lapilli\n(2-64 mm)",
                     R="Ceniza\n(< 2 mm)")
@@ -104,13 +109,15 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
         data = tb.pyro,
         a = ~BB, b = ~Lapilli, c = ~Ash, color = ~Label, 
         colors = 'Set1',
+        opacity = opacity*2,
         type = "scatterternary",
         fill = "toself", 
         mode = "lines",
         hoveron = 'fills'
       ) %>% 
       plotly::layout(
-        annotations = label("Pyroclastic"), ternary = pyro.ternaryAxes.en
+        ternary = pyro.ternaryAxes.en,
+        legend = list(title=list(text='<b> Pyroclastic rock </b>'))
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(
@@ -126,13 +133,15 @@ ternary_pyroclastic = function(output = c('ggplot','plotly'),
         data = tb.pyro,
         a = ~BB, b = ~Lapilli, c = ~Ash, color = ~Label.es, 
         colors = 'Set1',
+        opacity = opacity*2,
         type = "scatterternary",
         fill = "toself", 
         mode = "lines",
         hoveron = 'fills'
       ) %>% 
       plotly::layout(
-        annotations = label("Piroclásticas"), ternary = pyro.ternaryAxes.es
+        ternary = pyro.ternaryAxes.es,
+        legend = list(title=list(text='<b> Roca piroclástica </b>'))
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(

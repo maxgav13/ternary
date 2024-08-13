@@ -1,5 +1,6 @@
 ternary_qap_g = function(output = c('ggplot','plotly'), 
-                 language = c('en','es')) {
+                         language = c('en','es'),
+                         opacity = .5) {
   
   # library(ggplot2)
   # library(ggtern)
@@ -12,30 +13,38 @@ ternary_qap_g = function(output = c('ggplot','plotly'),
     100,    0,    0,          "Anorthosite",             "Anortosita",
     90,   10,    0,          "Anorthosite",             "Anortosita",
     90,    0,   10,          "Anorthosite",             "Anortosita",
+    100,    0,    0,          "Anorthosite",             "Anortosita",
     90,   10,    0,               "Gabbro",                  "Gabro",
     10,   90,    0,               "Gabbro",                  "Gabro",
     10,   85,    5,               "Gabbro",                  "Gabro",
     90,    5,    5,               "Gabbro",                  "Gabro",
+    90,   10,    0,               "Gabbro",                  "Gabro",
     90,    5,    5, "Orthopyroxene gabbro",   "Gabro ortopiroxénico",
     10,   85,    5, "Orthopyroxene gabbro",   "Gabro ortopiroxénico",
     10,   45,   45, "Orthopyroxene gabbro",   "Gabro ortopiroxénico",
+    90,    5,    5, "Orthopyroxene gabbro",   "Gabro ortopiroxénico",
     90,    5,    5, "Clinopyroxene norite", "Norita clinopiroxénica",
     10,   45,   45, "Clinopyroxene norite", "Norita clinopiroxénica",
     10,    5,   85, "Clinopyroxene norite", "Norita clinopiroxénica",
+    90,    5,    5, "Clinopyroxene norite", "Norita clinopiroxénica",
     90,    5,    5,               "Norite",                 "Norita",
     10,    5,   85,               "Norite",                 "Norita",
     10,    0,   90,               "Norite",                 "Norita",
     90,    0,   10,               "Norite",                 "Norita",
+    90,    5,    5,               "Norite",                 "Norita",
     10,   90,    0,      "Clinopyroxenite",        "Clinopiroxenita",
     0,  100,    0,      "Clinopyroxenite",        "Clinopiroxenita",
     0,   90,   10,      "Clinopyroxenite",        "Clinopiroxenita",
+    10,   90,    0,      "Clinopyroxenite",        "Clinopiroxenita",
     10,   90,    0,           "Websterite",             "Websterita",
     0,   90,   10,           "Websterite",             "Websterita",
     0,   10,   90,           "Websterite",             "Websterita",
     10,    0,   90,           "Websterite",             "Websterita",
+    10,   90,    0,           "Websterite",             "Websterita",
     10,    0,   90,      "Orthopyroxenite",         "Ortopiroxenita",
     0,   10,   90,      "Orthopyroxenite",         "Ortopiroxenita",
-    0,    0,  100,      "Orthopyroxenite",         "Ortopiroxenita"
+    0,    0,  100,      "Orthopyroxenite",         "Ortopiroxenita",
+    10,    0,   90,      "Orthopyroxenite",         "Ortopiroxenita"
   ) %>% 
     dplyr::mutate(dplyr::across(Label.en:Label.es,forcats::as_factor))
   
@@ -70,23 +79,29 @@ ternary_qap_g = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     QAP_G <- ggtern::ggtern(data=tb.QAP_G,ggtern::aes(Cpx,P,Opx)) +
-      ggplot2::geom_polygon(aes(fill=Label.en,group=Label.en),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(aes(fill=Label.en,color=Label.en,group=Label.en),
+                            alpha=opacity) +
+      ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::scale_fill_manual('',values = QAP_G.pal) +
-      ggplot2::labs(title="Gabbroic",
+      ggplot2::scale_fill_manual(values = QAP_G.pal) +
+      ggplot2::scale_color_manual(values = QAP_G.pal) +
+      ggplot2::labs(fill="Gabbroic",
+                    color="Gabbroic",
                     T="P",
                     L="Cpx",
                     R="Opx")
   } else if (any(output == 'ggplot' & language == 'es')) {
     QAP_G <- ggtern::ggtern(data=tb.QAP_G,ggtern::aes(Cpx,P,Opx)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,group=Label.es),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,group=Label.es),
+                            alpha=opacity) +
+      ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::scale_fill_manual('',values = QAP_G.pal) +
-      ggplot2::labs(title="Gabros",
+      ggplot2::scale_fill_manual(values = QAP_G.pal) +
+      ggplot2::scale_color_manual(values = QAP_G.pal) +
+      ggplot2::labs(fill="Gabros",
+                    color="Gabros",
                     T="P",
                     L="Cpx",
                     R="Opx")
@@ -97,15 +112,17 @@ ternary_qap_g = function(output = c('ggplot','plotly'),
         a = ~P, b = ~Cpx, c = ~Opx, 
         color = ~Label.en,
         colors = QAP_G.pal,
+        opacity = opacity*2,
         type = "scatterternary",
         fill = "toself",
         mode = "lines",
-        line = list(color = "black"),
         hoverinfo = 'text',
         hoveron = 'fills'
       ) %>% 
       plotly::layout(
-        annotations = label("Gabbroic"), ternary = QAP_G.ternaryAxes
+        ternary = QAP_G.ternaryAxes,
+        legend = list(title=list(text='<b> Gabbroic </b>')),
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(
@@ -122,15 +139,17 @@ ternary_qap_g = function(output = c('ggplot','plotly'),
         a = ~P, b = ~Cpx, c = ~Opx, 
         color = ~Label.es,
         colors = QAP_G.pal,
+        opacity = opacity*2,
         type = "scatterternary",
         fill = "toself",
         mode = "lines",
-        line = list(color = "black"),
         hoverinfo = 'text',
         hoveron = 'fills'
       ) %>% 
       plotly::layout(
-        annotations = label("Gabros"), ternary = QAP_G.ternaryAxes
+        ternary = QAP_G.ternaryAxes,
+        legend = list(title=list(text='<b> Gabros </b>')),
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(

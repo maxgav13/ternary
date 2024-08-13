@@ -22,24 +22,16 @@ library(tidyverse)
 This document shows how to display and use, in **R**, different ternary diagrams that are used regularly in geosciences, these are (diagram - function):
 
 -   QAP - `ternary_qap()`
-
+-   FAP - `ternary_fap()`
 -   QAP for gabbros - `ternary_qap_g()`
-
--   QAP for mafic rocks - `ternary_qap_m()`
-
--   QAP for ultramafic rocks - `ternary_qap_um()`
-
--   QFL for provenance - `ternary_qfl()`
-
--   QmFLt for provenance - `ternary_qmflt()`
-
+-   QAP for mafic rocks - `ternary_qap_m_ol()`, `ternary_qap_m_hbl()`
+-   QAP for ultramafic rocks - `ternary_qap_um()`,`ternary_qap_um_hbl()`
+-   Dickinson diagrams for provenance - `ternary_dickinson_qtfl()`, `ternary_dickinson_qmflt()`
 -   AFM - `ternary_afm()`
-
--   Pyroclastic rocks - `ternary_pyroclastic()`
-
--   Folk sandstone classification - `ternary_folk()`
-
--   Shepard soil classification - `ternary_shepard()`
+-   Feldspars - `ternary_feldspars()`
+-   Pyroclastic rocks - `ternary_pyroclastic_size()`, `ternary_pyroclastic_type()`
+-   Folk diagrams - `ternary_folk_gsm()`, `ternary_folk_smc()`, `ternary_folk_qfm()`, `ternary_folk_qfr()`
+-   Soil classification - `ternary_shepard()`, `ternary_usda()`
 
 # Use
 
@@ -56,9 +48,9 @@ lapply(fs::dir_ls('functions/'), source)
 A simple static diagram without data can be obtained by just calling the respective function. The result is a **ggplot2** object based on the **ggtern** package.
 
 ```{r}
-#| fig.cap: Static Folk ternary diagram for sandstones
+#| fig.cap: Static Folk ternary diagram for sedimentary rocks
 
-ternary_folk()
+ternary_folk_qfr()
 ```
 
 ## Dynamic
@@ -68,16 +60,16 @@ To obtain a dynamic diagram the `output` argument must be set to 'plotly', resul
 ```{r}
 #| fig.cap: Dynamic QAP ternary diagram for mafic rocks
 
-ternary_qap_m(output = 'plotly')
+ternary_qap_m_ol(output = 'plotly')
 ```
 
 ## Add your data!!
 
-To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function). 
+To add your own data to the diagram a new table must be created (imported), where the names of the columns must match the names of the vertices for the corresponding diagram, for this check the [Names](#tb-names) section where the respective names are given for each diagram (function).
 
 **The sample (row) totals (adding the three components) are not required to add-up to 100%, this is done internally.**
 
-Adding some data is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**). 
+Adding some data is demostrated here by ploting two points in the QtFL diagram, first by ploting the data in a static diagram (**ggplot2**), and then ploting the same data in the dynamic diagram (**plotly**).
 
 In these data the first sample (point) adds-up to a 100 but the second one does not, showing that point made above.
 
@@ -86,23 +78,22 @@ d = tibble(Qt=c(40,30),F=c(40,20),L=c(20,10))
 d
 ```
 
-
 ```{r}
 #| fig.cap: Static QtFL ternary diagram for provenance, with user's data
 
-ternary_qfl() + 
+ternary_dickinson_qtfl() + 
   geom_point(data = d,
              color = 'forestgreen',
              size = 2,
              alpha = .7)
 ```
 
-For the **plotly** object (diagram) the data must be mapped in the following order: `a` is the top vertix, `b` is the bottom left vertix, and `c` is th bottom right vertix. The things tha can be changed are the `data`, the `name` that is displayed in the legend, and the `marker` charcateristics; the rest is recommended not to be modified.
+For the **plotly** object (diagram) the data must be mapped in the following order: `a` is the top vertix, `b` is the bottom left vertix, and `c` is th bottom right vertix. The things that can be changed are the `data`, the `name` that is displayed in the legend, and the `marker` charcateristics; the rest is recommended not to be modified.
 
 ```{r}
 #| fig.cap: Dynamic QtFL ternary diagram for provenance, with user's data
 
-ternary_qfl(output = 'plotly') %>% 
+ternary_dickinson_qtfl(output = 'plotly') %>% 
   add_trace(a = ~Qt, b = ~F, c = ~L,
             data = d,
             name = 'My data',
@@ -119,27 +110,27 @@ ternary_qfl(output = 'plotly') %>%
 
 ## Names {#tb-names}
 
-These are the names that your data table must have for you to be able to plot your data in the corresponding diagram.
+These are the names that your data frame must have for you to be able to plot it in the corresponding diagram, corresponding to top (a), left (b), and right (c), respectively. This is more important for the 'plotly' output as you need to map the variables accordingly, as shown in the example above.
 
-- `ternary_qap()`: Q, A, P
-
-- `ternary_qap_g()`: Cpx, P, Opx
-
-- `ternary_qap_m()`: Ol, P, Px
-
-- `ternary_qap_um()`: Opx, Ol, Cpx
-
-- `ternary_qfl()`: Qt, F, L
-
-- `ternary_qmflt()`: F, Qm, Lt
-
-- `ternary_afm()`: A, F, M
-
-- `ternary_pyroclastic()`: Lapilli, BB, Ash
-
-- `ternary_folk()`: F, Q, R
-
-- `ternary_shepard()`: Sand, Clay, Silt
+-   `ternary_qap()`: Q, A, P
+-   `ternary_fap()`: F, P, A
+-   `ternary_qap_g()`: P, Cpx, Opx
+-   `ternary_qap_m_ol()`: P, Px, Ol
+-   `ternary_qap_m_hbl()`: P, Px, Hbl
+-   `ternary_qap_um()`: Ol, Opx, Cpx
+-   `ternary_qap_um_hbl()`: Ol, Px, Hbl
+-   `ternary_dickinson_qtfl()`: Qt, F, L
+-   `ternary_dickinson_qmflt()`: Qm, F, Lt
+-   `ternary_afm()`: F, A, M
+-   `ternary_feldspars()`: K, Na, Ca
+-   `ternary_pyroclastic_size()`: BB, Lapilli, Ash
+-   `ternary_pyroclastic_type()`: L, G, C
+-   `ternary_folk_qfr()`: Q, F, R
+-   `ternary_folk_qfm()`: Q, F, M
+-   `ternary_folk_gsm()`: G, S, M
+-   `ternary_folk_smc()`: S, M, C
+-   `ternary_shepard()`: Clay, Sand, Silt
+-   `ternary_usda()`: Clay, Sand, Silt
 
 ## Español (Spanish)
 
@@ -150,7 +141,6 @@ Todos los diagramas se pueden generar en español, para ello es necesario usar e
 
 ternary_shepard(language = 'es')
 ```
-
 
 # Conclusion
 

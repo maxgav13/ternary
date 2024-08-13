@@ -46,7 +46,7 @@ ternary_afm = function(output = c('ggplot','plotly'),
       ax = 0, ay = 0,
       xref = "paper", yref = "paper", 
       align = "center",
-      font = list(family = "serif", size = 15, color = "white"),
+      font = list(size = 15, color = "white"),
       bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
     )
   }
@@ -75,8 +75,7 @@ ternary_afm = function(output = c('ggplot','plotly'),
       ggplot2::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::labs(title="AFM",
-                    T="F",
+      ggplot2::labs(T="F",
                     L="A",
                     R="M")
   } else if (any(output == 'ggplot' & language == 'es')) {
@@ -89,8 +88,7 @@ ternary_afm = function(output = c('ggplot','plotly'),
       ggplot2::theme_bw() + 
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      ggplot2::labs(title="AFM",
-                    T="F",
+      ggplot2::labs(T="F",
                     L="A",
                     R="M")
   } else if (any(output == 'plotly' & language == 'en')) {
@@ -115,7 +113,8 @@ ternary_afm = function(output = c('ggplot','plotly'),
         showlegend = F
       ) %>% 
       plotly::layout(
-        annotations = label("AFM"), ternary = AFM.ternaryAxes
+        ternary = AFM.ternaryAxes,
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(
@@ -147,7 +146,8 @@ ternary_afm = function(output = c('ggplot','plotly'),
         showlegend = F
       ) %>% 
       plotly::layout(
-        annotations = label("AFM"), ternary = AFM.ternaryAxes
+        ternary = AFM.ternaryAxes,
+        margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
         toImageButtonOptions = list(

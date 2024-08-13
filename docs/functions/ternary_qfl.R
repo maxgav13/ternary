@@ -51,7 +51,7 @@ ternary_qfl = function(output = c('ggplot','plotly'),
       ax = 0, ay = 0,
       xref = "paper", yref = "paper", 
       align = "center",
-      font = list(family = "serif", size = 15, color = "white"),
+      font = list(size = 15, color = "white"),
       bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
     )
   }

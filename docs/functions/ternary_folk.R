@@ -49,7 +49,7 @@ ternary_folk = function(output = c('ggplot','plotly'),
       ax = 0, ay = 0,
       xref = "paper", yref = "paper", 
       align = "center",
-      font = list(family = "serif", size = 15, color = "white"),
+      font = list(size = 15, color = "white"),
       bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
     )
   }
@@ -72,25 +72,31 @@ ternary_folk = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     Folk <- ggtern::ggtern(data=tb.Folk,ggtern::aes(F,Q,R)) +
-      ggplot2::geom_polygon(ggplot2::aes(fill=Label,group=Label),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label,color=Label,
+                                         group=Label),
+                            alpha=0.5) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_manual(values = Folk.pal) +
+      ggplot2::scale_color_manual(values = Folk.pal) +
       ggplot2::labs(title="Folk",
                     fill = "Sandstone",
+                    color = "Sandstone",
                     T="Q",
                     L="F",
                     R="R")
   } else if (any(output == 'ggplot' & language == 'es')) {
     Folk <- ggtern::ggtern(data=tb.Folk,ggtern::aes(F,Q,R)) +
-      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,group=Label.es),
-                            color="black",alpha=0.5) +
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,color=Label.es,
+                                         group=Label.es),
+                            alpha=0.5) +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
       ggplot2::scale_fill_manual(values = Folk.pal) +
+      ggplot2::scale_color_manual(values = Folk.pal) +
       ggplot2::labs(title="Folk",
                     fill = "Arenisca",
+                    color = "Arenisca",
                     T="Q",
                     L="F",
                     R="R")
