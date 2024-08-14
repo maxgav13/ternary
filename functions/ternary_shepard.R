@@ -100,7 +100,7 @@ ternary_shepard = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     Shepard <- ggtern::ggtern(data=tb.Shepard,ggtern::aes(Sand,Clay,Silt)) +
-      ggplot2::geom_polygon(aes(fill=Label,color=Label,group=Label),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label,color=Label,group=Label),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
@@ -114,7 +114,7 @@ ternary_shepard = function(output = c('ggplot','plotly'),
                     R="Silt")
   } else if (any(output == 'ggplot' & language == 'es')) {
     Shepard <- ggtern::ggtern(data=tb.Shepard,ggtern::aes(Sand,Clay,Silt)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,group=Label.es),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,color=Label.es,group=Label.es),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
@@ -141,7 +141,7 @@ ternary_shepard = function(output = c('ggplot','plotly'),
       ) %>% 
       plotly::layout(
         ternary = Shepard.ternaryAxes.en,
-        legend = list(title=list(text='<b> Soil type </b>')),
+        legend = list(title=list(text='<b> Soil </b>')),
         margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(
@@ -167,7 +167,7 @@ ternary_shepard = function(output = c('ggplot','plotly'),
       ) %>% 
       plotly::layout(
         ternary = Shepard.ternaryAxes.es,
-        legend = list(title=list(text='<b> Tipo de suelo </b>')),
+        legend = list(title=list(text='<b> Suelo </b>')),
         margin = list(autoexpand=T,t=35)
       ) %>% 
       plotly::config(

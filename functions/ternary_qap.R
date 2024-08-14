@@ -145,10 +145,10 @@ ternary_qap = function(type = c('plutonic','volcanic'),
   
   if (any(output == 'ggplot')) {
     QAP <- ggtern::ggtern(data=tb.QAP,ggtern::aes(A,Q,P)) +
-      ggplot2::geom_polygon(aes(group=Label),
+      ggplot2::geom_polygon(ggplot2::aes(group=Label),
                             fill='white',
                             color="black",alpha=opacity) +
-      ggplot2::geom_text(data=Labs.QAP,aes(label=Label),
+      ggplot2::geom_text(data=Labs.QAP,ggplot2::aes(label=Label),
                          size=2.5,color="black",show.legend = T) +
       ggplot2::theme_bw() +
       ggtern::theme_arrowdefault() +

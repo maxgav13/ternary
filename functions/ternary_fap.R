@@ -159,15 +159,15 @@ ternary_fap = function(type = c('plutonic','volcanic'),
   
   if (any(type == 'plutonic' & output == 'ggplot')) {
     FAP <- ggtern::ggtern(data=tb.fap.plut,ggtern::aes(P,F,A)) +
-      ggplot2::geom_polygon(aes(group=Label),
+      ggplot2::geom_polygon(ggplot2::aes(group=Label),
                             fill='white',
                             color="black",alpha=opacity) +
-      ggplot2::geom_text(data=Labs.fap.plut,aes(label=Label),
+      ggplot2::geom_text(data=Labs.fap.plut,ggplot2::aes(label=Label),
                          size=2.5,color="black",show.legend = T) +
       ggplot2::theme_bw() +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      theme_rotate(180) +
+      ggtern::theme_rotate(180) +
       # custom_percent("Percent") +
       # ggplot2::scale_fill_manual(values = FAP.pal) +
       # ggplot2::scale_color_manual(values = FAP.pal) +
@@ -176,15 +176,15 @@ ternary_fap = function(type = c('plutonic','volcanic'),
                     R="A")
   } else if (any(type == 'volcanic' & output == 'ggplot')) {
     FAP <- ggtern::ggtern(data=tb.fap.volc,ggtern::aes(P,F,A)) +
-      ggplot2::geom_polygon(aes(group=Label),
+      ggplot2::geom_polygon(ggplot2::aes(group=Label),
                             fill='white',
                             color="black",alpha=opacity) +
-      ggplot2::geom_text(data=Labs.fap.volc,aes(label=Label),
+      ggplot2::geom_text(data=Labs.fap.volc,ggplot2::aes(label=Label),
                          size=2.5,color="black",show.legend = T) +
       ggplot2::theme_bw() +
       ggtern::theme_arrowdefault() +
       ggtern::theme_clockwise() +
-      theme_rotate(180) +
+      ggtern::theme_rotate(180) +
       ggplot2::labs(T="F",
                     L="P",
                     R="A")

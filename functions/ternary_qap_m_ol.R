@@ -73,7 +73,7 @@ ternary_qap_m_ol = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     QAP_M <- ggtern::ggtern(data=tb.QAP_M,ggtern::aes(Px,P,Ol)) +
-      ggplot2::geom_polygon(aes(fill=Label.en,color=Label.en,group=Label.en),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.en,color=Label.en,group=Label.en),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
@@ -88,7 +88,7 @@ ternary_qap_m_ol = function(output = c('ggplot','plotly'),
                     R="Ol")
   } else if (any(output == 'ggplot' & language == 'es')) {
     QAP_M <- ggtern::ggtern(data=tb.QAP_M,ggtern::aes(Px,P,Ol)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,group=Label.es),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,color=Label.es,group=Label.es),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +

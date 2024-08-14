@@ -111,8 +111,8 @@ ternary_feldspars = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     feld <- ggtern::ggtern(data=tb.feld,ggtern::aes(Na,K,Ca)) +
-      ggplot2::geom_polygon(aes(fill=Label,color=Label,
-                                group=Label),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label,color=Label,
+                                         group=Label),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
@@ -126,8 +126,8 @@ ternary_feldspars = function(output = c('ggplot','plotly'),
                     R="Ca")
   } else if (any(output == 'ggplot' & language == 'es')) {
     feld <- ggtern::ggtern(data=tb.feld,ggtern::aes(Na,K,Ca)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,
-                                group=Label.es),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,color=Label.es,
+                                         group=Label.es),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +

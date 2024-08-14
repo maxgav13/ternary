@@ -89,7 +89,7 @@ ternary_qap_um = function(output = c('ggplot','plotly'),
   
   if (any(output == 'ggplot' & language == 'en')) {
     QAP_UM <- ggtern::ggtern(data=tb.QAP_UM,ggtern::aes(Opx,Ol,Cpx)) +
-      ggplot2::geom_polygon(aes(fill=Label.en,color=Label.en,group=Label.en),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.en,color=Label.en,group=Label.en),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
@@ -103,7 +103,7 @@ ternary_qap_um = function(output = c('ggplot','plotly'),
                     R="Cpx")
   } else if (any(output == 'ggplot' & language == 'es')) {
     QAP_UM <- ggtern::ggtern(data=tb.QAP_UM,ggtern::aes(Opx,Ol,Cpx)) +
-      ggplot2::geom_polygon(aes(fill=Label.es,color=Label.es,group=Label.es),
+      ggplot2::geom_polygon(ggplot2::aes(fill=Label.es,color=Label.es,group=Label.es),
                             alpha=opacity) +
       ggtern::theme_bw() + 
       ggtern::theme_arrowdefault() +
